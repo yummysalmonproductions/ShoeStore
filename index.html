@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>David's Shoe Store</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Comic Sans MS', 'Trebuchet MS', Arial, sans-serif;
+    background: linear-gradient(180deg, #FFE8A3 0%, #FFD166 100%);
+    min-height: 100vh;
+    color: #2D2A26;
+    overflow-x: hidden;
+  }
+  #app { max-width: 920px; margin: 0 auto; padding: 16px; }
+
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #fff; border-radius: 20px; padding: 12px 20px;
+    box-shadow: 0 6px 0 #E8B84B; margin-bottom: 16px;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .logo { font-size: 24px; font-weight: 900; color: #FF6B35; display:flex; align-items:center; gap:8px;}
+  .stat-pill {
+    background: #FFF3D6; border-radius: 14px; padding: 8px 14px;
+    font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px;
+    border: 3px solid #FFD166;
+  }
+  .stat-pill.cash { border-color: #4CAF50; color:#1B5E20; background:#E8F8E9;}
+  .stat-pill.day { border-color: #5B8DEF; color:#0D3B8C; background:#E6EFFE;}
+
+  .panel {
+    background: #fff; border-radius: 22px; padding: 22px;
+    box-shadow: 0 8px 0 #E8B84B; margin-bottom: 18px;
+  }
+  .panel h2 {
+    font-size: 22px; margin-bottom: 12px; color: #FF6B35;
+    display:flex; align-items:center; gap:8px;
+  }
+  .panel p.sub { color:#6b6359; font-size:15px; margin-bottom:14px; }
+
+  button {
+    font-family: inherit; font-weight: 800; font-size: 16px;
+    border: none; border-radius: 16px; padding: 14px 22px;
+    cursor: pointer; transition: transform 0.08s ease;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.18);
+  }
+  button:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,0.18); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: #FF6B35; color: #fff; }
+  .btn-green { background: #4CAF50; color: #fff; }
+  .btn-blue { background: #5B8DEF; color: #fff; }
+  .btn-purple { background: #9C6BFF; color: #fff; }
+  .btn-gray { background: #E5E1D8; color: #4A453D; box-shadow: 0 5px 0 #C9C4B7;}
+  .btn-big { width: 100%; font-size: 19px; padding: 18px; }
+
+  .row { display:flex; gap:12px; flex-wrap:wrap; }
+  .row > * { flex:1; min-width: 140px; }
+
+  .stepper-row { display:flex; align-items:center; gap:12px; margin: 14px 0; flex-wrap: wrap; }
+  .stepper-btn {
+    width: 54px; height: 54px; border-radius: 50%; font-size: 28px;
+    background: #FF6B35; color: #fff; flex: none; padding: 0; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .stepper-btn.dec { background: #E5E1D8; color:#4A453D; box-shadow: 0 5px 0 #C9C4B7;}
+  .stepper-val {
+    font-size: 26px; font-weight: 900; min-width: 90px; text-align:center;
+    background:#FFF3D6; border:3px solid #FFD166; border-radius:14px; padding:8px 10px;
+  }
+  .stepper-row.sm { gap:8px; margin:6px 0; }
+  .stepper-btn.sm { width:38px; height:38px; font-size:19px; }
+  .stepper-val.sm { font-size:17px; min-width:54px; padding:5px 8px; }
+  .stepper-max.sm { font-size:12px; padding:8px 10px; }
+
+  .brand-card { border: 3px solid #F1EFE4; border-radius: 16px; padding: 14px; margin-bottom: 14px; }
+  .brand-card-head { display:flex; align-items:center; gap:8px; border-bottom: 3px solid #eee; padding-bottom:8px; margin-bottom:8px; flex-wrap:wrap; }
+  .brand-dot { width:14px; height:14px; border-radius:50%; flex:none; }
+  .brand-name { font-weight:900; font-size:16px; flex:1; }
+  .brand-cost { font-size:12px; color:#8a8474; font-weight:700; }
+  .brand-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .brand-row-label { width:46px; font-weight:800; font-size:13px; color:#6b6359; flex:none; }
+  .brand-margin { font-size:13px; font-weight:700; margin-top:6px; }
+
+  .storefront { margin: 10px 0 16px; }
+  .sign {
+    background: #FF6B35; color: #fff; text-align:center; font-weight:900;
+    font-size: 16px; padding: 8px; border-radius: 10px 10px 0 0;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.15);
+  }
+  .awning {
+    height: 14px;
+    background: repeating-linear-gradient(90deg, #5B8DEF 0 16px, #fff 16px 32px);
+    border-radius: 2px;
+  }
+  .facade {
+    background: #F4D9A0; border: 4px solid #C9924A; border-top:none;
+    border-radius: 0 0 14px 14px; padding: 14px; display:flex; gap:14px; align-items:stretch;
+  }
+  .window {
+    flex: 1; background: #fff; border-radius: 10px; border: 4px solid #9C6BFF;
+    padding: 10px; min-height: 90px;
+  }
+  .shelf-icons { display:flex; flex-direction:column; gap:6px; }
+  .shelf-group-label { font-size:11px; font-weight:900; text-transform:uppercase; margin-bottom:3px; }
+  .shelf-group-icons { display:flex; flex-wrap:wrap; gap:4px; align-items:center; min-height:20px; }
+  .empty-shelf { color:#b5ab94; font-style:italic; font-size: 14px; }
+  .more-tag { font-weight:900; color:#9C6BFF; align-self:center; font-size:13px; }
+  .door {
+    width: 50px; background: #8C5A2D; border-radius: 8px; position:relative; flex:none;
+  }
+  .doorknob {
+    width:8px; height:8px; border-radius:50%; background:#FFD166;
+    position:absolute; right:8px; top:50%;
+  }
+  .shoe-icon svg { display:block; }
+
+  .explainer {
+    background:#E6EFFE; border-left:6px solid #5B8DEF; border-radius:10px;
+    padding:12px 16px; font-size:15px; margin-top:12px; color:#0D3B8C;
+  }
+  .explainer.warn { background:#FFF1E0; border-color:#FF9F45; color:#8C4A0D; }
+  .explainer.good { background:#E8F8E9; border-color:#4CAF50; color:#1B5E20; }
+
+  table.statement { width:100%; border-collapse: collapse; font-size:16px; }
+  table.statement td { padding: 8px 6px; }
+  table.statement tr.line td:first-child { color:#5a554c; }
+  table.statement tr.line td:last-child { text-align:right; font-weight:700; }
+  table.statement tr.total td { border-top: 3px solid #2D2A26; font-weight:900; font-size:18px; padding-top:10px; }
+  table.statement tr.total.good td { color:#1B5E20; }
+  table.statement tr.total.bad td { color:#B3261E; }
+  table.statement tr.sub td { font-weight:800; padding-top:10px; }
+
+  .delta { font-size:13px; font-weight:800; padding:3px 9px; border-radius:8px; margin-left:8px; display:inline-block; }
+  .delta.pos { background:#E8F8E9; color:#1B5E20; }
+  .delta.neg { background:#FDEAE8; color:#B3261E; }
+
+  .badge-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+  .badge {
+    background:#FFF3D6; border:3px solid #FFD166; border-radius:14px;
+    padding:8px 12px; font-size:13px; font-weight:800; display:flex; align-items:center; gap:6px;
+    color:#8C5A00;
+  }
+
+  .modal-bg {
+    position: fixed; inset:0; background: rgba(0,0,0,0.55);
+    display:flex; align-items:center; justify-content:center; z-index:50; padding:16px;
+  }
+  .modal {
+    background:#fff; border-radius:24px; padding:28px; max-width:520px; width:100%;
+    box-shadow: 0 12px 0 #E8B84B; max-height: 85vh; overflow-y:auto;
+  }
+  .modal h2 { color:#FF6B35; font-size:24px; margin-bottom:10px; }
+  .big-emoji { font-size:54px; text-align:center; margin:10px 0; }
+
+  .tabbar { display:flex; gap:8px; margin-bottom:16px; flex-wrap: wrap; }
+  .tab {
+    flex:1; text-align:center; padding:10px; border-radius:14px; font-weight:800;
+    cursor:pointer; background:#F1EFE4; color:#8a8474; font-size:14px; min-width: 120px;
+  }
+  .tab.active { background:#FF6B35; color:#fff; }
+
+  .sim-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom: 10px;}
+  .sim-stats { display:flex; gap:10px; flex-wrap:wrap; }
+  .sidewalk {
+    background: #DCEFE0; border-radius: 14px; min-height: 130px; margin-top: 14px;
+    padding: 14px 10px 6px; display:flex; align-items:flex-end; gap: 18px; overflow-x:auto;
+    border: 3px dashed #4CAF50;
+  }
+  .sidewalk-empty { color:#5a8d63; font-style:italic; align-self:center; margin:auto; }
+
+  .customer { position: relative; display:flex; flex-direction:column; align-items:center; animation: walkIn 0.35s ease forwards; flex: none; }
+  .customer.leaving { animation: walkOut 0.32s ease forwards; }
+  .customer.bought .cust-body { box-shadow: 0 0 0 3px #4CAF50; }
+  .cust-head { width: 26px; height: 26px; border-radius: 50%; margin-bottom: -4px; }
+  .cust-body { width: 36px; height: 38px; border-radius: 14px 14px 6px 6px; }
+  .bubble {
+    position:absolute; bottom: 68px; background:#fff; border-radius:10px; padding:6px 10px;
+    font-size:12px; font-weight:800; white-space:nowrap; box-shadow:0 3px 0 rgba(0,0,0,0.12);
+    opacity:0; transform: translateY(6px) scale(0.8); transition: all 0.2s ease;
+  }
+  .bubble.show { opacity:1; transform: translateY(0) scale(1); }
+  .bubble.happy { color:#1B5E20; border: 2px solid #4CAF50; }
+  .bubble.sad { color:#B3261E; border: 2px solid #F2A29A; }
+
+  @keyframes walkIn { from { transform: translateX(-60px); opacity:0; } to { transform: translateX(0); opacity:1; } }
+  @keyframes walkOut { from { transform: translateX(0) translateY(0); opacity:1; } to { transform: translateX(50px) translateY(-10px); opacity:0; } }
+
+  .flow-chart { margin-top: 14px; }
+  .flow-row { display:flex; align-items:center; gap:10px; margin-bottom: 10px; }
+  .flow-label { width: 150px; font-size: 13px; font-weight:700; color:#5a554c; flex:none; }
+  .flow-track { flex:1; background:#F1EFE4; border-radius: 8px; height: 22px; overflow:hidden; }
+  .flow-fill { height:100%; border-radius:8px; width:0; transition: width 0.7s cubic-bezier(.2,.8,.3,1); }
+  .flow-fill.flow-in { background: #4CAF50; }
+  .flow-fill.flow-out { background: #E2645A; }
+  .flow-val { width: 80px; text-align:right; font-weight:800; font-size:14px; flex:none; }
+
+  .bs-chart { margin-top: 14px; }
+  .bs-bar-label { font-size: 13px; font-weight:800; color:#5a554c; margin-bottom: 6px; }
+  .bs-bar { display:flex; height: 34px; border-radius: 10px; overflow:hidden; background:#F1EFE4; }
+  .bs-seg { height:100%; width:0; transition: width 0.7s cubic-bezier(.2,.8,.3,1); display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:800; overflow:hidden; }
+  .bs-loan { background:#E2645A; }
+  .bs-equity { background:#5B8DEF; }
+  .bs-cash-seg { background:#4CAF50; }
+  .bs-legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:10px; font-size:12px; font-weight:700; }
+  .bs-legend span { display:flex; align-items:center; gap:5px; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  .swatch-row { display:flex; flex-wrap:wrap; gap:8px; }
+  .swatch { width:38px; height:38px; border-radius:50%; padding:0; box-shadow:0 3px 0 rgba(0,0,0,0.15); border:3px solid #fff; }
+  .swatch.selected { border-color:#2D2A26; transform:scale(1.12); }
+
+  .quiz-input {
+    width:100%; font-size:24px; font-weight:900; padding:12px; border-radius:14px;
+    border:3px solid #FFD166; font-family:inherit;
+  }
+
+  .hidden { display:none !important; }
+
+  @media (max-width:600px) {
+    .logo { font-size:19px; }
+    .panel { padding:16px; }
+    .flow-label { width: 110px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============================================================
+   DAVID'S SHOE STORE — financial literacy game
+   Single-file game, in-memory state only (no localStorage).
+   ============================================================ */
+
+const STORE_NAME = "David's Shoe Store";
+const RENT = 30;
+const AD_COST = 15;
+
+const BRANDS = [
+  { id: "classic", name: "Classic Kicks", short: "Classic", cost: 15, minPrice: 20, maxPrice: 50, defaultPrice: 30, priceStep: 5, popularity: 0.5, bulkChance: 0.25, unlockLevel: 1, color: "#FF6B35" },
+  { id: "adidas",  name: "Adidas",        short: "Adidas",  cost: 35, minPrice: 40, maxPrice: 80, defaultPrice: 55, priceStep: 5, popularity: 0.3, bulkChance: 0.15, unlockLevel: 2, color: "#5B8DEF" },
+  { id: "jordans", name: "Nike Air Jordans", short: "Jordans", cost: 65, minPrice: 70, maxPrice: 150, defaultPrice: 95, priceStep: 10, popularity: 0.2, bulkChance: 0.05, unlockLevel: 3, color: "#9C6BFF" },
+];
+
+const CUSTOM_COLOR_PALETTE = ["#FF6B35","#5B8DEF","#9C6BFF","#4CAF50","#E2588A","#FFD166","#2D2A26","#00BCD4","#FF4757","#1B5E20"];
+
+function defaultCustomBrand() {
+  return {
+    id: "custom", name: "My Design", short: "My Design",
+    cost: 15, minPrice: 20, maxPrice: 50, defaultPrice: 30, priceStep: 5,
+    popularity: 0.25, bulkChance: 0.2, unlockLevel: 1,
+    color: "#FF6B35", accentColor: "#FFFFFF", designed: false
+  };
+}
+
+function SHOE_SVG_TEMPLATE(color, accentColor) {
+  const a = accentColor || "#ffffff";
+  return `<span class="shoe-icon"><svg width="30" height="15" viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6,21 Q9,14 24,10.5 Q38,8 50,8 Q66,8 78,11 Q90,14 95,21 Q98,25 95,29 Q90,36 78,39 Q66,42 50,42 Q38,42 24,39.5 Q9,36 6,29 Q3,25 6,21 Z" fill="${color}" stroke="#2D2A26" stroke-width="1.2"/>
+    <path d="M6,21 Q9,14 24,10.5 Q19,18 19,25 Q19,32 24,39.5 Q9,36 6,29 Q3,25 6,21 Z" fill="#000000" opacity="0.16"/>
+    <rect x="44" y="9" width="13" height="32" rx="6.5" fill="${a}" opacity="0.92"/>
+    <line x1="42" y1="15" x2="59" y2="19" stroke="#2D2A26" stroke-width="2" stroke-linecap="round"/>
+    <line x1="59" y1="15" x2="42" y2="19" stroke="#2D2A26" stroke-width="2" stroke-linecap="round"/>
+    <line x1="42" y1="23" x2="59" y2="27" stroke="#2D2A26" stroke-width="2" stroke-linecap="round"/>
+    <line x1="59" y1="23" x2="42" y2="27" stroke="#2D2A26" stroke-width="2" stroke-linecap="round"/>
+    <line x1="42" y1="31" x2="59" y2="35" stroke="#2D2A26" stroke-width="2" stroke-linecap="round"/>
+    <line x1="59" y1="31" x2="42" y2="35" stroke="#2D2A26" stroke-width="2" stroke-linecap="round"/>
+    <path d="M95,21 Q98,25 95,29 Q90,36 78,39 Q84,32 84,25 Q84,18 78,11 Q90,14 95,21 Z" fill="#000000" opacity="0.12"/>
+  </svg></span>`;
+}
+
+function freshState() {
+  const inventory = {}, stagedBuy = {}, stagedPrices = {};
+  BRANDS.forEach(b => { inventory[b.id] = { units: 0, costEach: 0 }; stagedBuy[b.id] = 0; stagedPrices[b.id] = b.defaultPrice; });
+  const customBrand = defaultCustomBrand();
+  inventory[customBrand.id] = { units: 0, costEach: 0 };
+  stagedBuy[customBrand.id] = 0;
+  stagedPrices[customBrand.id] = customBrand.defaultPrice;
+  return {
+    screen: "intro", day: 1, level: 1, cash: 100, loan: 0,
+    inventory, shelfOwned: false,
+    history: [], badges: [],
+    staged: { buy: stagedBuy, prices: stagedPrices, payRent: false, runAd: false },
+    currentDay: null, currentQuiz: null,
+    customBrand, designDraftName: null, cameFrom: null,
+    message: null, activeTab: "income",
+  };
+}
+let state = freshState();
+
+function fmt(n) {
+  const neg = n < 0;
+  const v = Math.round(Math.abs(n)).toLocaleString();
+  return (neg ? "-$" : "$") + v;
+}
+
+function findBrand(id) {
+  if (state.customBrand && id === state.customBrand.id) return state.customBrand;
+  return BRANDS.find(b => b.id === id) || null;
+}
+function unlockedBrands() {
+  const list = BRANDS.filter(b => b.unlockLevel <= state.level);
+  if (state.customBrand && state.customBrand.designed) list.push(state.customBrand);
+  return list;
+}
+function totalUnits() {
+  return Object.keys(state.inventory).reduce((s, id) => s + state.inventory[id].units, 0);
+}
+function totalStagedCost(excludeId) {
+  return unlockedBrands().reduce((s, b) => s + (b.id === excludeId ? 0 : (state.staged.buy[b.id] || 0)) * b.cost, 0);
+}
+function maxBuyable(brand) {
+  const otherSpend = totalStagedCost(brand.id);
+  const remaining = state.cash - otherSpend;
+  return Math.max(0, Math.floor(remaining / brand.cost));
+}
+function totalShelfIfOpened() {
+  return unlockedBrands().reduce((s, b) => s + state.inventory[b.id].units + (state.staged.buy[b.id] || 0), 0);
+}
+function inventoryValueNow() {
+  return Object.keys(state.inventory).reduce((s, id) => s + state.inventory[id].units * state.inventory[id].costEach, 0);
+}
+function equityNow() {
+  const assets = state.cash + inventoryValueNow() + (state.shelfOwned ? 50 : 0);
+  return assets - state.loan;
+}
+
+function shelfIconsHTML(getUnits) {
+  const ub = unlockedBrands();
+  const total = ub.reduce((s, b) => s + getUnits(b), 0);
+  if (total === 0) return `<span class="empty-shelf">Empty shelf — buy some sneakers!</span>`;
+  const cap = 8;
+  return ub.map(b => {
+    const units = getUnits(b);
+    if (units <= 0) return "";
+    const shown = Math.min(units, cap);
+    let icons = "";
+    for (let i = 0; i < shown; i++) icons += SHOE_SVG_TEMPLATE(b.color, b.accentColor);
+    if (units > cap) icons += `<span class="more-tag">+${units - cap}</span>`;
+    return `<div class="shelf-group">
+      <div class="shelf-group-label" style="color:${b.color}">${b.short} (${units})</div>
+      <div class="shelf-group-icons">${icons}</div>
+    </div>`;
+  }).join("");
+}
+
+function storefrontHTML(shelfId, getUnits) {
+  return `
+  <div class="storefront">
+    <div class="sign">🏬 ${STORE_NAME}</div>
+    <div class="awning"></div>
+    <div class="facade">
+      <div class="window"><div class="shelf-icons" id="${shelfId}">${shelfIconsHTML(getUnits)}</div></div>
+      <div class="door"><div class="doorknob"></div></div>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   RENDER DISPATCH
+   ============================================================ */
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  app.appendChild(topbar());
+
+  if (state.screen === "intro") app.appendChild(introScreen());
+  else if (state.screen === "day") app.appendChild(dayScreen());
+  else if (state.screen === "design") app.appendChild(designScreen());
+  else if (state.screen === "simulating") app.appendChild(simulationScreen());
+  else if (state.screen === "quiz") app.appendChild(quizScreen());
+  else if (state.screen === "results") app.appendChild(resultsScreen());
+  else if (state.screen === "statements") app.appendChild(statementsScreen());
+  else if (state.screen === "invest") app.appendChild(investScreen());
+  else if (state.screen === "end") app.appendChild(endScreen());
+
+  if (state.message) app.appendChild(modal(state.message));
+}
+
+function topbar() {
+  const bar = document.createElement("div");
+  bar.className = "topbar";
+  bar.innerHTML = `
+    <div class="logo">👟 ${STORE_NAME}</div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <div class="stat-pill day">📅 Day ${state.day}</div>
+      <div class="stat-pill cash">💵 ${fmt(state.cash)}</div>
+      <div class="stat-pill">📦 ${totalUnits()} pairs</div>
+    </div>
+  `;
+  return bar;
+}
+
+/* ============================================================
+   INTRO
+   ============================================================ */
+function introScreen() {
+  const d = document.createElement("div");
+  d.className = "panel";
+  d.innerHTML = `
+    <h2>🏪 Welcome to ${STORE_NAME}!</h2>
+    <p class="sub">You've got $100 saved up. Each day you'll stock your shelf, set prices, then open
+    the doors and watch real customers decide whether to buy! You'll start with Classic Kicks, unlock
+    fancier brands like Adidas and Nike Air Jordans as your store grows, and you can even design and
+    sell your own sneaker brand.</p>
+    <div class="explainer"><b>Level 1 goal:</b> Buy sneakers, sell them for more than you paid, and make your first profit!</div>
+  `;
+  const btn = document.createElement("button");
+  btn.className = "btn-primary btn-big";
+  btn.style.marginTop = "16px";
+  btn.textContent = "Open the store →";
+  btn.onclick = () => { state.screen = "day"; render(); };
+  d.appendChild(btn);
+  return d;
+}
+
+/* ============================================================
+   DESIGN YOUR OWN SHOE
+   ============================================================ */
+function designScreen() {
+  const wrap = document.createElement("div");
+  const panel = document.createElement("div");
+  panel.className = "panel";
+  const cb = state.customBrand;
+  const nameValue = state.designDraftName !== null && state.designDraftName !== undefined
+    ? state.designDraftName
+    : (cb.designed ? cb.name : "");
+
+  panel.innerHTML = `
+    <h2>🎨 Design Your Own Shoe!</h2>
+    <p class="sub">Pick colors and give your design a name. It'll show up as a real brand you can stock and sell.</p>
+    <div style="display:flex; justify-content:center; margin:18px 0;">
+      <div style="transform:scale(3.2);">${SHOE_SVG_TEMPLATE(cb.color, cb.accentColor)}</div>
+    </div>
+    <p class="sub" style="font-weight:800; margin-bottom:6px;">Shoe color</p>
+    <div class="swatch-row" id="baseSwatches">
+      ${CUSTOM_COLOR_PALETTE.map(c => `<button class="swatch ${cb.color === c ? "selected" : ""}" data-target="color" data-color="${c}" style="background:${c}"></button>`).join("")}
+    </div>
+    <p class="sub" style="font-weight:800; margin:14px 0 6px;">Laces / accent color</p>
+    <div class="swatch-row" id="accentSwatches">
+      ${CUSTOM_COLOR_PALETTE.map(c => `<button class="swatch ${cb.accentColor === c ? "selected" : ""}" data-target="accentColor" data-color="${c}" style="background:${c}"></button>`).join("")}
+    </div>
+    <p class="sub" style="font-weight:800; margin:14px 0 6px;">Name your design</p>
+    <input type="text" id="designName" maxlength="18" value="${nameValue.replace(/"/g, "&quot;")}" placeholder="e.g. Lightning Bolts" class="quiz-input" style="font-size:16px;">
+  `;
+  panel.addEventListener("click", (e) => {
+    const sw = e.target.closest(".swatch");
+    if (!sw) return;
+    const nameInput = document.getElementById("designName");
+    if (nameInput) state.designDraftName = nameInput.value;
+    state.customBrand[sw.dataset.target] = sw.dataset.color;
+    render();
+  });
+  wrap.appendChild(panel);
+
+  const saveBtn = document.createElement("button");
+  saveBtn.className = "btn-primary btn-big";
+  saveBtn.textContent = "✅ Save my design!";
+  saveBtn.onclick = () => {
+    const nameInput = document.getElementById("designName");
+    const name = (nameInput && nameInput.value ? nameInput.value : "").trim().slice(0, 18) || "My Design";
+    state.customBrand.name = name;
+    state.customBrand.short = name.length > 10 ? name.slice(0, 9) + "…" : name;
+    state.customBrand.designed = true;
+    state.designDraftName = null;
+    state.screen = state.cameFrom || "day";
+    render();
+  };
+  wrap.appendChild(saveBtn);
+
+  const backBtn = document.createElement("button");
+  backBtn.className = "btn-gray btn-big";
+  backBtn.style.marginTop = "10px";
+  backBtn.textContent = "← Back without saving";
+  backBtn.onclick = () => {
+    state.designDraftName = null;
+    state.screen = state.cameFrom || "day";
+    render();
+  };
+  wrap.appendChild(backBtn);
+
+  return wrap;
+}
+
+/* ============================================================
+   DAY SETUP SCREEN — buy inventory per brand, set prices, bills
+   ============================================================ */
+function dayScreen() {
+  const wrap = document.createElement("div");
+  const ub = unlockedBrands();
+
+  const designBtn = document.createElement("button");
+  designBtn.className = state.customBrand.designed ? "btn-purple" : "btn-blue";
+  designBtn.style.width = "100%";
+  designBtn.style.marginBottom = "14px";
+  designBtn.innerHTML = state.customBrand.designed ? `🎨 Edit "${state.customBrand.name}" design` : `🎨 Design Your Own Shoe!`;
+  designBtn.onclick = () => { state.cameFrom = "day"; state.designDraftName = null; state.screen = "design"; render(); };
+  wrap.appendChild(designBtn);
+
+  if (state.history.length > 0) {
+    const peekBtn = document.createElement("button");
+    peekBtn.className = "btn-gray";
+    peekBtn.style.width = "100%";
+    peekBtn.style.marginBottom = "14px";
+    peekBtn.textContent = "📑 Check my statements";
+    peekBtn.onclick = () => { state.cameFrom = "day"; state.screen = "statements"; render(); };
+    wrap.appendChild(peekBtn);
+  }
+
+  const buyPanel = document.createElement("div");
+  buyPanel.className = "panel";
+  let cardsHtml = "";
+  ub.forEach(b => {
+    const qty = state.staged.buy[b.id] || 0;
+    const price = state.staged.prices[b.id];
+    const maxQty = maxBuyable(b);
+    const margin = price - b.cost;
+    cardsHtml += `
+      <div class="brand-card">
+        <div class="brand-card-head" style="border-color:${b.color};">
+          <span class="brand-dot" style="background:${b.color}"></span>
+          <span class="brand-name">${b.name}</span>
+          <span class="brand-cost">Cost ${fmt(b.cost)}/pair</span>
+        </div>
+        <div class="brand-row">
+          <div class="brand-row-label">Buy</div>
+          <div class="stepper-row sm">
+            <button class="stepper-btn sm dec" data-act="buyDec" data-id="${b.id}" ${qty <= 0 ? "disabled" : ""}>−</button>
+            <div class="stepper-val sm">${qty}</div>
+            <button class="stepper-btn sm" data-act="buyInc" data-id="${b.id}" ${qty >= maxQty ? "disabled" : ""}>+</button>
+            <button class="btn-gray stepper-max sm" data-act="buyMax" data-id="${b.id}">Max (${maxQty})</button>
+          </div>
+        </div>
+        <div class="brand-row">
+          <div class="brand-row-label">Price</div>
+          <div class="stepper-row sm">
+            <button class="stepper-btn sm dec" data-act="priceDec" data-id="${b.id}" ${price <= b.minPrice ? "disabled" : ""}>−</button>
+            <div class="stepper-val sm">${fmt(price)}</div>
+            <button class="stepper-btn sm" data-act="priceInc" data-id="${b.id}" ${price >= b.maxPrice ? "disabled" : ""}>+</button>
+          </div>
+        </div>
+        <p class="brand-margin" style="color:${margin > 0 ? "#1B5E20" : "#B3261E"};">${margin > 0 ? `✅ ${fmt(margin)} profit per pair sold` : `⚠️ No profit at this price`}</p>
+      </div>
+    `;
+  });
+
+  buyPanel.innerHTML = `
+    <h2>📦 Stock your shelf</h2>
+    <p class="sub">Pick how many pairs of each brand to buy, and set today's price for each.</p>
+    ${storefrontHTML("dayShelfIcons", (b) => state.inventory[b.id].units + (state.staged.buy[b.id] || 0))}
+    ${cardsHtml}
+    <p class="sub">Total to spend on inventory: <b>${fmt(totalStagedCost())}</b> — you have ${fmt(state.cash)}</p>
+  `;
+  buyPanel.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-act]");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const brand = findBrand(id);
+    if (!brand) return;
+    const act = btn.dataset.act;
+    if (act === "buyDec") state.staged.buy[id] = Math.max(0, (state.staged.buy[id] || 0) - 1);
+    else if (act === "buyInc") { const m = maxBuyable(brand); state.staged.buy[id] = Math.min(m, (state.staged.buy[id] || 0) + 1); }
+    else if (act === "buyMax") state.staged.buy[id] = maxBuyable(brand);
+    else if (act === "priceDec") state.staged.prices[id] = Math.max(brand.minPrice, state.staged.prices[id] - brand.priceStep);
+    else if (act === "priceInc") state.staged.prices[id] = Math.min(brand.maxPrice, state.staged.prices[id] + brand.priceStep);
+    render();
+  });
+
+  let bills = null;
+  if (state.level >= 2) {
+    bills = document.createElement("div");
+    bills.className = "panel";
+    bills.innerHTML = `<h2>🧾 Today's bills</h2><p class="sub">Running a store costs money even if nobody walks in.</p>`;
+    const rentRow = document.createElement("div");
+    rentRow.className = "row";
+    const rentBtn = document.createElement("button");
+    rentBtn.className = state.staged.payRent ? "btn-green" : "btn-gray";
+    rentBtn.innerHTML = `🏠 Pay rent (${fmt(RENT)})<br><small style="font-weight:600;">Required to stay open</small>`;
+    rentBtn.onclick = () => { state.staged.payRent = !state.staged.payRent; render(); };
+    const adBtn = document.createElement("button");
+    adBtn.className = state.staged.runAd ? "btn-purple" : "btn-gray";
+    adBtn.innerHTML = `📣 Run an ad (${fmt(AD_COST)})<br><small style="font-weight:600;">Brings in more customers</small>`;
+    adBtn.onclick = () => { state.staged.runAd = !state.staged.runAd; render(); };
+    rentRow.appendChild(rentBtn);
+    rentRow.appendChild(adBtn);
+    bills.appendChild(rentRow);
+  }
+
+  const billsTotal = (state.level >= 2 && state.staged.payRent ? RENT : 0) + (state.level >= 2 && state.staged.runAd ? AD_COST : 0);
+  const canAfford = totalStagedCost() + billsTotal <= state.cash;
+  const hasStock = totalShelfIfOpened() > 0;
+  const goBtn = document.createElement("button");
+  goBtn.className = "btn-primary btn-big";
+  goBtn.textContent = "🛎️ Open the doors for today!";
+  goBtn.disabled = !canAfford || !hasStock;
+  goBtn.onclick = openStore;
+
+  const warnMsg = document.createElement("p");
+  warnMsg.className = "sub";
+  warnMsg.style.textAlign = "center";
+  if (!hasStock) warnMsg.textContent = "Buy at least 1 pair of sneakers before you open!";
+  else if (!canAfford) warnMsg.textContent = "You can't afford that combination — lower a purchase or skip a bill.";
+
+  wrap.appendChild(buyPanel);
+  if (bills) wrap.appendChild(bills);
+  wrap.appendChild(goBtn);
+  if (!canAfford || !hasStock) wrap.appendChild(warnMsg);
+  return wrap;
+}
+
+function openStore() {
+  const ub = unlockedBrands();
+  const buyTotalCost = totalStagedCost();
+  const payRent = state.level >= 2 && state.staged.payRent;
+  const runAd = state.level >= 2 && state.staged.runAd;
+  const billsTotal = (payRent ? RENT : 0) + (runAd ? AD_COST : 0);
+
+  if (buyTotalCost + billsTotal > state.cash) return;
+  if (totalShelfIfOpened() === 0) return;
+
+  const buyUnitsByBrand = {};
+  ub.forEach(b => {
+    const qty = state.staged.buy[b.id] || 0;
+    buyUnitsByBrand[b.id] = qty;
+    if (qty > 0) {
+      const before = state.inventory[b.id];
+      const newUnits = before.units + qty;
+      const newCost = before.units * before.costEach + qty * b.cost;
+      state.inventory[b.id] = { units: newUnits, costEach: newUnits > 0 ? newCost / newUnits : 0 };
+    }
+  });
+  state.cash -= (buyTotalCost + billsTotal);
+
+  const prices = {};
+  ub.forEach(b => { prices[b.id] = state.staged.prices[b.id]; });
+
+  state.currentDay = { buyTotalCost, buyUnitsByBrand, prices, payRent, runAd, billsTotal };
+  BRANDS.forEach(b => { state.staged.buy[b.id] = 0; });
+  state.staged.buy[state.customBrand.id] = 0;
+  state.screen = "simulating";
+  render();
+}
+
+/* ============================================================
+   CUSTOMER SIMULATION LOGIC
+   ============================================================ */
+function buildVisitors(ub, runAd) {
+  let count = 5 + Math.floor(Math.random() * 4);
+  if (runAd) count += 3 + Math.floor(Math.random() * 3);
+  const totalWeight = ub.reduce((s, b) => s + b.popularity, 0);
+  const visitors = [];
+  for (let i = 0; i < count; i++) {
+    let r = Math.random() * totalWeight;
+    let chosen = ub[ub.length - 1];
+    for (const b of ub) {
+      if (r < b.popularity) { chosen = b; break; }
+      r -= b.popularity;
+    }
+    const willingness = Math.round(chosen.minPrice - 5 + Math.random() * (chosen.maxPrice - chosen.minPrice + 15));
+    const wantsQty = Math.random() < chosen.bulkChance ? 2 : 1;
+    visitors.push({ brand: chosen, willingness, wantsQty });
+  }
+  return visitors;
+}
+
+function simulateOutcomes(visitors, prices, inventorySnapshot) {
+  const inv = {};
+  for (const id in inventorySnapshot) inv[id] = inventorySnapshot[id].units;
+  let unitsSold = 0, revenue = 0, cogs = 0;
+  const perBrandSold = {};
+  const events = [];
+  for (const v of visitors) {
+    const b = v.brand;
+    const available = inv[b.id] || 0;
+    if (available <= 0) { events.push({ type: "unavailable", brand: b }); continue; }
+    const price = prices[b.id];
+    if (price === undefined || price > v.willingness) { events.push({ type: "tooexpensive", brand: b }); continue; }
+    const qty = Math.min(v.wantsQty, available);
+    inv[b.id] -= qty;
+    unitsSold += qty;
+    revenue += qty * price;
+    cogs += qty * inventorySnapshot[b.id].costEach;
+    perBrandSold[b.id] = (perBrandSold[b.id] || 0) + qty;
+    events.push({ type: "bought", brand: b, qty });
+  }
+  return { events, unitsSold, revenue, cogs, endInventory: inv, perBrandSold };
+}
+
+/* ============================================================
+   SIMULATION SCREEN — animated customers
+   ============================================================ */
+function simulationScreen() {
+  const wrap = document.createElement("div");
+  const panel = document.createElement("div");
+  panel.className = "panel";
+  panel.innerHTML = `
+    <div class="sim-header">
+      <h2 style="margin:0;">🛎️ Day ${state.day} is open!</h2>
+      <button class="btn-gray" id="skipBtn">⏩ Skip to results</button>
+    </div>
+    <p class="sub">Watch who stops by today...</p>
+    ${storefrontHTML("simShelfIcons", (b) => state.inventory[b.id].units)}
+    <div class="sim-stats">
+      <div class="stat-pill cash">💵 <span id="simCash">${fmt(state.cash)}</span></div>
+      <div class="stat-pill">👟 Sold: <span id="simSold">0</span></div>
+    </div>
+    <div class="sidewalk" id="sidewalk"><span class="sidewalk-empty">Customers are on their way...</span></div>
+  `;
+  wrap.appendChild(panel);
+  setTimeout(() => startSimulation(), 150);
+  return wrap;
+}
+
+function updateSimShelf(runningInv) {
+  const el = document.getElementById("simShelfIcons");
+  if (!el) return;
+  el.innerHTML = shelfIconsHTML((b) => runningInv[b.id] || 0);
+}
+
+function startSimulation() {
+  const dayPlan = state.currentDay;
+  const ub = unlockedBrands();
+  const visitors = buildVisitors(ub, dayPlan.runAd);
+  const sim = simulateOutcomes(visitors, dayPlan.prices, state.inventory);
+
+  let idx = 0;
+  let runningCash = state.cash;
+  const runningInv = {};
+  ub.forEach(b => { runningInv[b.id] = state.inventory[b.id].units; });
+  let runningSold = 0;
+  const timeoutIds = [];
+
+  const sidewalk = document.getElementById("sidewalk");
+  const soldEl = document.getElementById("simSold");
+  const cashEl = document.getElementById("simCash");
+  const skipBtn = document.getElementById("skipBtn");
+  if (sidewalk) sidewalk.innerHTML = "";
+
+  function done() {
+    timeoutIds.forEach(id => clearTimeout(id));
+    finalizeDay(dayPlan, sim);
+  }
+  if (skipBtn) skipBtn.onclick = done;
+
+  function step() {
+    if (idx >= sim.events.length) { done(); return; }
+    const ev = sim.events[idx]; idx++;
+
+    const custEl = document.createElement("div");
+    custEl.className = "customer";
+    custEl.innerHTML = `<div class="bubble"></div><div class="cust-head" style="background:${ev.brand.color}"></div><div class="cust-body" style="background:${ev.brand.color}"></div>`;
+    if (sidewalk) sidewalk.appendChild(custEl);
+
+    const t1 = setTimeout(() => {
+      const bubble = custEl.querySelector(".bubble");
+      if (ev.type === "bought") {
+        bubble.textContent = ev.qty > 1 ? `${ev.qty} ${ev.brand.short}!` : `${ev.brand.short}, yes!`;
+        bubble.classList.add("happy");
+        custEl.classList.add("bought");
+        runningInv[ev.brand.id] -= ev.qty;
+        runningCash += ev.qty * dayPlan.prices[ev.brand.id];
+        runningSold += ev.qty;
+      } else if (ev.type === "tooexpensive") {
+        bubble.textContent = `${ev.brand.short}? Too pricey!`;
+        bubble.classList.add("sad");
+      } else {
+        bubble.textContent = `No ${ev.brand.short} left!`;
+        bubble.classList.add("sad");
+      }
+      bubble.classList.add("show");
+      if (cashEl) cashEl.textContent = fmt(runningCash);
+      if (soldEl) soldEl.textContent = runningSold;
+      updateSimShelf(runningInv);
+    }, 280);
+    timeoutIds.push(t1);
+
+    const t2 = setTimeout(() => { custEl.classList.add("leaving"); }, 280 + 550);
+    timeoutIds.push(t2);
+
+    const t3 = setTimeout(() => { custEl.remove(); step(); }, 280 + 550 + 320);
+    timeoutIds.push(t3);
+  }
+  step();
+}
+
+function finalizeDay(dayPlan, sim) {
+  const invValueBefore = inventoryValueNow();
+  const assetsBefore = state.cash + invValueBefore + (state.shelfOwned ? 50 : 0);
+  const equityBefore = assetsBefore - state.loan;
+
+  const grossProfit = sim.revenue - sim.cogs;
+  const netProfit = grossProfit - dayPlan.billsTotal;
+  state.cash += sim.revenue;
+  for (const id in sim.endInventory) {
+    if (state.inventory[id]) state.inventory[id].units = sim.endInventory[id];
+  }
+
+  const invValueAfter = inventoryValueNow();
+  const assetsAfter = state.cash + invValueAfter + (state.shelfOwned ? 50 : 0);
+  const equityAfter = assetsAfter - state.loan;
+
+  state.history.push({
+    day: state.day, buyTotalCost: dayPlan.buyTotalCost, prices: dayPlan.prices,
+    unitsSold: sim.unitsSold, revenue: sim.revenue, cogs: sim.cogs, grossProfit,
+    rent: dayPlan.payRent ? RENT : 0, ad: dayPlan.runAd ? AD_COST : 0, billsTotal: dayPlan.billsTotal,
+    netProfit, cashEnd: state.cash, perBrandSold: sim.perBrandSold,
+    assetsBefore, assetsAfter, equityBefore, equityAfter, equityDelta: equityAfter - equityBefore
+  });
+
+  state.currentQuiz = { type: pickQuizType(), submitted: false, userAnswer: null, correct: null, correctAnswer: null };
+  state.screen = "quiz";
+  render();
+}
+
+/* ============================================================
+   QUIZ — calculate it yourself before the reveal
+   ============================================================ */
+function pickQuizType() {
+  const options = ["profit"];
+  if (state.level >= 3) options.push("cash");
+  if (state.level >= 4) options.push("equity");
+  const weighted = options.length === 1 ? ["profit"] : ["profit", "profit"].concat(options.filter(o => o !== "profit"));
+  return weighted[Math.floor(Math.random() * weighted.length)];
+}
+
+function quizScreen() {
+  const r = state.history[state.history.length - 1];
+  const q = state.currentQuiz;
+  const wrap = document.createElement("div");
+  const panel = document.createElement("div");
+  panel.className = "panel";
+
+  let promptHtml = "";
+  let correctAnswer = 0;
+
+  if (q.type === "profit") {
+    const brandLines = Object.keys(r.perBrandSold || {}).map(id => {
+      const b = findBrand(id);
+      const qty = r.perBrandSold[id];
+      const price = r.prices[id];
+      return `<li>${qty} × ${b ? b.short : id} at ${fmt(price)} each = ${fmt(qty * price)}</li>`;
+    }).join("");
+    promptHtml = `
+      <h2>🧮 Your turn! What's today's profit?</h2>
+      <p class="sub">Here's what happened today:</p>
+      <ul style="margin:6px 0 12px 20px; font-size:15px; line-height:1.6;">${brandLines || "<li>No sales today</li>"}</ul>
+      <p class="sub">Total revenue: <b>${fmt(r.revenue)}</b><br>
+      Cost of those sneakers: <b>${fmt(r.cogs)}</b>${r.billsTotal ? `<br>Rent &amp; ads: <b>${fmt(r.billsTotal)}</b>` : ""}</p>
+      <p class="sub" style="font-weight:800;">Profit = Revenue − Cost${r.billsTotal ? " − Bills" : ""}. What's your profit?</p>
+    `;
+    correctAnswer = r.netProfit;
+  } else if (q.type === "cash") {
+    const prevCash = state.history.length > 1 ? state.history[state.history.length - 2].cashEnd : 100;
+    promptHtml = `
+      <h2>🧮 Your turn! What's your cash balance?</h2>
+      <p class="sub">Yesterday you had <b>${fmt(prevCash)}</b> in cash.</p>
+      <p class="sub">Today: you spent ${fmt(r.buyTotalCost)} on new sneakers${r.billsTotal ? ` and ${fmt(r.billsTotal)} on bills` : ""}, then earned ${fmt(r.revenue)} from sales.</p>
+      <p class="sub" style="font-weight:800;">What's your cash balance now?</p>
+    `;
+    correctAnswer = r.cashEnd;
+  } else {
+    promptHtml = `
+      <h2>🧮 Your turn! What's your equity now?</h2>
+      <p class="sub">Before today, your total assets (cash + inventory) were worth <b>${fmt(r.assetsBefore)}</b>, and you owed <b>${fmt(state.loan)}</b>.</p>
+      <p class="sub">After today's sales and purchases, your assets are now worth <b>${fmt(r.assetsAfter)}</b>.</p>
+      <p class="sub" style="font-weight:800;">Equity = Assets − What you owe. What's your equity now?</p>
+    `;
+    correctAnswer = r.equityAfter;
+  }
+
+  panel.innerHTML = promptHtml + `
+    <div style="display:flex; align-items:center; gap:10px; margin-top:10px;">
+      <span style="font-size:24px; font-weight:900;">$</span>
+      <input type="number" id="quizInput" placeholder="0" class="quiz-input" ${q.submitted ? "disabled" : ""}>
+    </div>
+  `;
+
+  function doCheck() {
+    const inputEl = document.getElementById("quizInput");
+    const val = inputEl ? inputEl.value.trim() : "";
+    const userAnswer = val === "" ? null : Number(val);
+    q.userAnswer = userAnswer;
+    q.correctAnswer = correctAnswer;
+    q.correct = userAnswer !== null && !isNaN(userAnswer) && Math.round(userAnswer) === Math.round(correctAnswer);
+    q.submitted = true;
+    render();
+  }
+
+  if (!q.submitted) {
+    const checkBtn = document.createElement("button");
+    checkBtn.className = "btn-primary btn-big";
+    checkBtn.style.marginTop = "14px";
+    checkBtn.textContent = "✅ Check my answer";
+    checkBtn.onclick = doCheck;
+    panel.appendChild(checkBtn);
+
+    const skipLink = document.createElement("p");
+    skipLink.className = "sub";
+    skipLink.style.textAlign = "center";
+    skipLink.style.marginTop = "10px";
+    skipLink.style.cursor = "pointer";
+    skipLink.style.textDecoration = "underline";
+    skipLink.textContent = "Not sure? Tap here to see the answer";
+    skipLink.onclick = () => {
+      q.userAnswer = null; q.correctAnswer = correctAnswer; q.correct = false; q.submitted = true;
+      render();
+    };
+    panel.appendChild(skipLink);
+  } else {
+    const feedback = document.createElement("div");
+    feedback.className = "explainer " + (q.correct ? "good" : "warn");
+    feedback.innerHTML = q.correct
+      ? `🎉 Yes! ${fmt(q.correctAnswer)} is exactly right!`
+      : (q.userAnswer === null
+          ? `No worries! The answer is <b>${fmt(q.correctAnswer)}</b>.`
+          : `Close! You said ${fmt(q.userAnswer)} — the answer is <b>${fmt(q.correctAnswer)}</b>.`);
+    panel.appendChild(feedback);
+
+    const continueBtn = document.createElement("button");
+    continueBtn.className = "btn-blue btn-big";
+    continueBtn.style.marginTop = "12px";
+    continueBtn.textContent = "📊 See my statements →";
+    continueBtn.onclick = () => { state.screen = "results"; render(); };
+    panel.appendChild(continueBtn);
+  }
+
+  wrap.appendChild(panel);
+
+  setTimeout(() => {
+    const inputEl = document.getElementById("quizInput");
+    if (inputEl && !q.submitted) {
+      inputEl.focus();
+      inputEl.addEventListener("keypress", (e) => { if (e.key === "Enter") doCheck(); });
+    }
+  }, 10);
+
+  return wrap;
+}
+
+/* ============================================================
+   RESULTS SCREEN — all statements shown automatically
+   ============================================================ */
+function statementPanel(emoji, title, contentEl) {
+  const panel = document.createElement("div");
+  panel.className = "panel";
+  const h = document.createElement("h2");
+  h.textContent = `${emoji} ${title}`;
+  panel.appendChild(h);
+  panel.appendChild(contentEl);
+  return panel;
+}
+
+function resultsScreen() {
+  const r = state.history[state.history.length - 1];
+  const wrap = document.createElement("div");
+
+  const recap = document.createElement("div");
+  recap.className = "panel";
+  const soldText = r.unitsSold === 0 ? `Nobody bought sneakers on Day ${r.day} 😬`
+    : `Day ${r.day}: you sold <b>${r.unitsSold}</b> pair${r.unitsSold === 1 ? "" : "s"}!`;
+  recap.innerHTML = `<h2>📊 ${soldText}</h2>`;
+  wrap.appendChild(recap);
+
+  wrap.appendChild(statementPanel("💰", "Income Statement", incomeStatementView(r)));
+  if (state.level >= 3) wrap.appendChild(statementPanel("💵", "Cash Flow Statement", cashFlowView(r)));
+  if (state.level >= 4) wrap.appendChild(statementPanel("⚖️", "Balance Sheet", balanceSheetView(r)));
+
+  const nextBtn = document.createElement("button");
+  nextBtn.className = "btn-primary btn-big";
+  nextBtn.textContent = "Next day →";
+  nextBtn.onclick = advanceDay;
+  wrap.appendChild(nextBtn);
+
+  setTimeout(animateBars, 20);
+  return wrap;
+}
+
+function advanceDay() {
+  state.day += 1;
+  state.screen = "day";
+  checkLevelUp();
+  render();
+}
+
+/* ============================================================
+   LEVEL PROGRESSION
+   ============================================================ */
+function checkLevelUp() {
+  const milestones = {
+    2: { day: 4, badge: "First Profit Pro", text: "You survived your first days of selling! Real stores have bills too — rent and ads start today. You've also unlocked Adidas — try mixing it in with your Classic Kicks!" },
+    3: { day: 7, badge: "Cash Detective", text: "From now on, watch closely: PROFIT and CASH are not the same thing! You've also unlocked Nike Air Jordans — they cost $65/pair with huge profit potential, but buying a bunch ties up a LOT of cash if they sit on the shelf." },
+    4: { day: 10, badge: "Balance Sheet Boss", text: "Time to see the BIG picture: everything you OWN vs. everything you OWE. That's called a Balance Sheet." },
+    5: { day: 13, badge: "Valuation Wizard", text: "An investor wants to buy David's Shoe Store! You'll learn how grown-ups decide what a business is actually worth." }
+  };
+  for (const lvl of Object.keys(milestones)) {
+    const m = milestones[lvl];
+    if (state.day === m.day && state.level < parseInt(lvl)) {
+      state.level = parseInt(lvl);
+      if (!state.badges.includes(m.badge)) state.badges.push(m.badge);
+      state.message = { type: "levelup", level: lvl, badge: m.badge, text: m.text };
+      break;
+    }
+  }
+}
+
+/* ============================================================
+   STATEMENTS SCREEN (dedicated browse-anytime view)
+   ============================================================ */
+function statementsScreen() {
+  const wrap = document.createElement("div");
+  const tabPanel = document.createElement("div");
+  tabPanel.className = "panel";
+
+  const tabbar = document.createElement("div");
+  tabbar.className = "tabbar";
+  const tabs = [{ id: "income", label: "💰 Income" }];
+  if (state.level >= 3) tabs.push({ id: "cash", label: "💵 Cash Flow" });
+  if (state.level >= 4) tabs.push({ id: "balance", label: "⚖️ Balance Sheet" });
+
+  tabs.forEach(t => {
+    const el = document.createElement("div");
+    el.className = "tab" + (state.activeTab === t.id ? " active" : "");
+    el.textContent = t.label;
+    el.onclick = () => { state.activeTab = t.id; render(); };
+    tabbar.appendChild(el);
+  });
+  tabPanel.appendChild(tabbar);
+
+  if (state.activeTab === "income") tabPanel.appendChild(incomeStatementView());
+  else if (state.activeTab === "cash" && state.level >= 3) tabPanel.appendChild(cashFlowView());
+  else if (state.activeTab === "balance" && state.level >= 4) tabPanel.appendChild(balanceSheetView());
+  else tabPanel.appendChild(incomeStatementView());
+
+  wrap.appendChild(tabPanel);
+  const back = document.createElement("button");
+  back.className = "btn-gray btn-big";
+  back.textContent = "← Back to the store";
+  back.onclick = () => { state.screen = state.cameFrom || (state.history.length ? "results" : "day"); render(); };
+  wrap.appendChild(back);
+
+  setTimeout(animateBars, 20);
+  return wrap;
+}
+
+function animateBars() {
+  document.querySelectorAll(".flow-fill, .bs-seg").forEach(el => {
+    const w = el.getAttribute("data-w");
+    if (w !== null) el.style.width = w + "%";
+  });
+}
+
+function incomeStatementView(today) {
+  const d = document.createElement("div");
+  const totalRev = state.history.reduce((s, r) => s + r.revenue, 0);
+  const totalCogs = state.history.reduce((s, r) => s + r.cogs, 0);
+  const totalBills = state.history.reduce((s, r) => s + r.billsTotal, 0);
+  const totalProfit = totalRev - totalCogs - totalBills;
+
+  const brandTotals = {};
+  state.history.forEach(r => {
+    Object.keys(r.perBrandSold || {}).forEach(id => { brandTotals[id] = (brandTotals[id] || 0) + r.perBrandSold[id]; });
+  });
+  const brandSummary = Object.keys(brandTotals).map(id => {
+    const b = findBrand(id);
+    if (!b) return "";
+    return `<span class="badge" style="border-color:${b.color}; color:${b.color};">👟 ${b.short}: ${brandTotals[id]} sold</span>`;
+  }).join("");
+
+  const deltaHtml = today ? `<span class="delta ${today.netProfit >= 0 ? "pos" : "neg"}">${today.netProfit >= 0 ? "▲" : "▼"} ${fmt(Math.abs(today.netProfit))} today</span>` : "";
+
+  d.innerHTML = `
+    <p class="sub">This shows how much money ${STORE_NAME} has MADE so far across all ${state.history.length} day(s).</p>
+    <table class="statement">
+      <tr class="line"><td>Total Revenue (all sneakers sold)</td><td>${fmt(totalRev)}</td></tr>
+      <tr class="line"><td>Cost of sneakers sold</td><td>-${fmt(totalCogs)}</td></tr>
+      <tr class="sub"><td>Gross Profit</td><td>${fmt(totalRev - totalCogs)}</td></tr>
+      ${state.level >= 2 ? `<tr class="line"><td>Rent &amp; ads</td><td>-${fmt(totalBills)}</td></tr>` : ""}
+      <tr class="total ${totalProfit >= 0 ? "good" : "bad"}"><td>Net Profit ${deltaHtml}</td><td>${fmt(totalProfit)}</td></tr>
+    </table>
+    ${brandSummary ? `<div class="badge-row">${brandSummary}</div>` : ""}
+    <div class="explainer">📘 <b>Income Statement</b> = the story of how much you sold, what it cost you, and what's left over. That "left over" part is <b>profit</b> — the whole goal of a business!</div>
+  `;
+  return d;
+}
+
+function cashFlowView(today) {
+  const d = document.createElement("div");
+  const totalBuy = state.history.reduce((s, r) => s + r.buyTotalCost, 0);
+  const totalRev = state.history.reduce((s, r) => s + r.revenue, 0);
+  const totalBills = state.history.reduce((s, r) => s + r.billsTotal, 0);
+  const netCash = totalRev - totalBuy - totalBills;
+  const maxVal = Math.max(totalRev, totalBuy, totalBills, Math.abs(netCash), 1);
+
+  const bar = (label, magnitude, displayVal, colorClass) => `
+    <div class="flow-row">
+      <div class="flow-label">${label}</div>
+      <div class="flow-track"><div class="flow-fill ${colorClass}" data-w="${Math.round(magnitude / maxVal * 100)}"></div></div>
+      <div class="flow-val">${fmt(displayVal)}</div>
+    </div>`;
+
+  const cashDeltaToday = today ? (today.revenue - today.buyTotalCost - today.billsTotal) : null;
+  const cashHeadline = today
+    ? `<p class="sub">💵 Cash on hand right now: <b>${fmt(state.cash)}</b> <span class="delta ${cashDeltaToday >= 0 ? "pos" : "neg"}">${cashDeltaToday >= 0 ? "▲" : "▼"} ${fmt(Math.abs(cashDeltaToday))} today</span></p>`
+    : `<p class="sub">💵 Cash on hand right now: <b>${fmt(state.cash)}</b></p>`;
+
+  d.innerHTML = `
+    <p class="sub">Profit is what you EARNED on paper. Cash is what's actually in your pocket. They're not always the same!</p>
+    ${cashHeadline}
+    <div class="flow-chart">
+      ${bar("Cash in (sales)", totalRev, totalRev, "flow-in")}
+      ${bar("Cash out (inventory)", totalBuy, -totalBuy, "flow-out")}
+      ${bar("Cash out (bills)", totalBills, -totalBills, "flow-out")}
+      ${bar("Net change", Math.abs(netCash), netCash, netCash >= 0 ? "flow-in" : "flow-out")}
+    </div>
+    <div class="explainer">💡 Expensive Jordans are the classic example: buy 5 pairs at $65 each and you've spent $325 in cash instantly — even though they might take days to sell. Profit can look great on paper while your cash is tight!</div>
+  `;
+  return d;
+}
+
+function balanceSheetView(today) {
+  const d = document.createElement("div");
+  const stockedBrands = Object.keys(state.inventory).map(findBrand).filter(b => b && state.inventory[b.id].units > 0);
+  const inventoryValue = inventoryValueNow();
+  const shelfValue = state.shelfOwned ? 50 : 0;
+  const assets = state.cash + inventoryValue + shelfValue;
+  const liabilities = state.loan;
+  const equity = assets - liabilities;
+  const total = Math.max(assets, 1);
+
+  const brandStockLines = stockedBrands.map(b => {
+    const val = state.inventory[b.id].units * state.inventory[b.id].costEach;
+    return `<tr class="line"><td style="padding-left:18px; color:${b.color};">↳ ${b.short} (${state.inventory[b.id].units} pairs)</td><td>${fmt(val)}</td></tr>`;
+  }).join("");
+
+  const seg = (val, css, label, bg) => val > 0
+    ? `<div class="bs-seg ${css}" style="${bg ? "background:" + bg + ";" : ""}" data-w="${Math.round(val / total * 100)}">${val / total > 0.12 ? label : ""}</div>` : "";
+
+  let invSegHtml = "";
+  stockedBrands.forEach(b => {
+    const val = state.inventory[b.id].units * state.inventory[b.id].costEach;
+    invSegHtml += seg(val, "", b.short, b.color);
+  });
+
+  const equityHeadline = today
+    ? `<p class="sub">⚖️ Equity right now: <b>${fmt(equity)}</b> <span class="delta ${today.equityDelta >= 0 ? "pos" : "neg"}">${today.equityDelta >= 0 ? "▲" : "▼"} ${fmt(Math.abs(today.equityDelta))} today</span></p>`
+    : "";
+
+  d.innerHTML = `
+    <p class="sub">This is a snapshot of everything ${STORE_NAME} OWNS and OWES right now.</p>
+    ${equityHeadline}
+    <table class="statement">
+      <tr class="sub"><td colspan="2">What you OWN (Assets)</td></tr>
+      <tr class="line"><td>Cash</td><td>${fmt(state.cash)}</td></tr>
+      <tr class="line"><td>Sneakers in stock (total)</td><td>${fmt(inventoryValue)}</td></tr>
+      ${brandStockLines}
+      ${state.shelfOwned ? `<tr class="line"><td>Shop shelf</td><td>${fmt(shelfValue)}</td></tr>` : ""}
+      <tr class="sub"><td>Total Assets</td><td>${fmt(assets)}</td></tr>
+      <tr class="sub" style="padding-top:18px;"><td colspan="2">What you OWE (Liabilities)</td></tr>
+      <tr class="line"><td>Loan</td><td>${fmt(liabilities)}</td></tr>
+      <tr class="total good"><td>What's really YOURS (Equity)</td><td>${fmt(equity)}</td></tr>
+    </table>
+    <div class="bs-chart">
+      <div class="bs-bar-label">What you OWN</div>
+      <div class="bs-bar">${seg(state.cash, "bs-cash-seg", "Cash")}${invSegHtml}</div>
+      <div class="bs-bar-label" style="margin-top:14px;">What you OWE + What's YOURS</div>
+      <div class="bs-bar">${seg(liabilities, "bs-loan", "Loan")}${seg(equity, "bs-equity", "Equity")}</div>
+      <div class="bs-legend">
+        <span><i class="dot" style="background:#4CAF50;"></i>Cash</span>
+        ${stockedBrands.map(b => `<span><i class="dot" style="background:${b.color};"></i>${b.short}</span>`).join("")}
+        <span><i class="dot" style="background:#E2645A;"></i>Loan</span>
+        <span><i class="dot" style="background:#5B8DEF;"></i>Equity</span>
+      </div>
+    </div>
+    <div class="explainer">⚖️ <b>Assets = Liabilities + Equity.</b> See how both bars are the same length? Equity is the part that's truly yours.</div>
+  `;
+  return d;
+}
+
+/* ============================================================
+   INVESTOR / VALUATION
+   ============================================================ */
+function investScreen() {
+  const wrap = document.createElement("div");
+  const recent = state.history.slice(-5);
+  const avgDailyProfit = recent.reduce((s, r) => s + r.netProfit, 0) / Math.max(1, recent.length);
+  const monthlyProfit = avgDailyProfit * 20;
+  const fairLow = Math.round(monthlyProfit * 3);
+  const fairHigh = Math.round(monthlyProfit * 6);
+  const offer = Math.round(monthlyProfit * (3 + Math.random() * 3));
+  state.fairRange = [fairLow, fairHigh];
+
+  const panel = document.createElement("div");
+  panel.className = "panel";
+  panel.innerHTML = `
+    <h2>🤝 An investor wants to buy ${STORE_NAME}!</h2>
+    <p class="sub">An investor looked at your recent profits and is offering to buy your whole store for:</p>
+    <div style="text-align:center; font-size:38px; font-weight:900; color:#FF6B35; margin:14px 0;">${fmt(offer)}</div>
+    <div class="explainer">📐 Grown-up investors often guess a business is worth <b>3 to 6 times</b> what it earns in a month. You've earned about ${fmt(Math.round(avgDailyProfit))}/day lately — about ${fmt(Math.round(monthlyProfit))} a "month" (20 selling days).</div>
+    <p class="sub" style="margin-top:14px;">So a fair price lands between <b>${fmt(fairLow)}</b> and <b>${fmt(fairHigh)}</b>. Is ${fmt(offer)} a good deal?</p>
+  `;
+  wrap.appendChild(panel);
+
+  const btnRow = document.createElement("div");
+  btnRow.className = "row";
+  const sellBtn = document.createElement("button");
+  sellBtn.className = "btn-green";
+  sellBtn.textContent = "🤝 Take the deal!";
+  sellBtn.onclick = () => resolveInvest(true, offer);
+  const keepBtn = document.createElement("button");
+  keepBtn.className = "btn-primary";
+  keepBtn.textContent = "🙅 No thanks, keep my store";
+  keepBtn.onclick = () => resolveInvest(false, offer);
+  btnRow.appendChild(sellBtn);
+  btnRow.appendChild(keepBtn);
+  wrap.appendChild(btnRow);
+  return wrap;
+}
+
+function resolveInvest(accepted, offer) {
+  const [lo, hi] = state.fairRange;
+  let verdict;
+  if (accepted) {
+    state.cash += offer;
+    verdict = offer >= lo
+      ? `Great move! ${fmt(offer)} was a fair (or even generous) price for a store earning what yours does. Smart trading!`
+      : `Hmm — that offer was actually BELOW fair value (${fmt(lo)}–${fmt(hi)}). You sold for less than it was worth. Next time, hold out for more!`;
+  } else {
+    verdict = offer < lo
+      ? `Smart! That offer was below what your store is really worth (${fmt(lo)}–${fmt(hi)}). Good instinct holding on.`
+      : `That's okay, but that offer was actually fair or even good (worth ${fmt(lo)}–${fmt(hi)}). Sometimes it's still fine to keep building your dream though!`;
+  }
+  state.message = { type: "invest_result", text: verdict, accepted };
+  render();
+}
+
+/* ============================================================
+   END SCREEN
+   ============================================================ */
+function endScreen() {
+  const wrap = document.createElement("div");
+  const panel = document.createElement("div");
+  panel.className = "panel";
+  panel.innerHTML = `<h2>🏆 You completed ${STORE_NAME}!</h2><p class="sub">Here's everything you learned how to read like a real business owner:</p>`;
+  const badgeRow = document.createElement("div");
+  badgeRow.className = "badge-row";
+  state.badges.forEach(b => {
+    const el = document.createElement("div");
+    el.className = "badge";
+    el.textContent = "🏅 " + b;
+    badgeRow.appendChild(el);
+  });
+  panel.appendChild(badgeRow);
+  wrap.appendChild(panel);
+
+  const restartBtn = document.createElement("button");
+  restartBtn.className = "btn-primary btn-big";
+  restartBtn.textContent = "🔁 Play again";
+  restartBtn.onclick = () => { state = freshState(); render(); };
+  wrap.appendChild(restartBtn);
+  return wrap;
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function modal(msg) {
+  const bg = document.createElement("div");
+  bg.className = "modal-bg";
+  const box = document.createElement("div");
+  box.className = "modal";
+
+  if (msg.type === "levelup") {
+    box.innerHTML = `
+      <div class="big-emoji">🎉</div>
+      <h2>Level ${msg.level} unlocked!</h2>
+      <p style="font-size:16px; line-height:1.5; margin:10px 0;">${msg.text}</p>
+      <div class="badge-row"><div class="badge">🏅 ${msg.badge}</div></div>
+    `;
+  } else if (msg.type === "invest_result") {
+    box.innerHTML = `
+      <div class="big-emoji">${msg.accepted ? "🤝" : "🏪"}</div>
+      <h2>${msg.accepted ? "Deal closed!" : "You kept your store!"}</h2>
+      <p style="font-size:16px; line-height:1.5; margin:10px 0;">${msg.text}</p>
+    `;
+  }
+
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "btn-primary btn-big";
+  closeBtn.style.marginTop = "16px";
+  closeBtn.textContent = "Continue →";
+  closeBtn.onclick = () => {
+    const wasLevel5Up = state.message.type === "levelup" && state.message.level == 5;
+    const wasInvestResult = state.message.type === "invest_result";
+    state.message = null;
+    if (wasLevel5Up) state.screen = "invest";
+    else if (wasInvestResult) state.screen = "end";
+    else state.screen = "day";
+    render();
+  };
+  box.appendChild(closeBtn);
+  bg.appendChild(box);
+  return bg;
+}
+
+render();
+</script>
+</body>
+</html>
